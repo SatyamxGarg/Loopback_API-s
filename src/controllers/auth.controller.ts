@@ -1,19 +1,20 @@
 import {repository} from '@loopback/repository';
-import {post, requestBody} from '@loopback/rest';
-import {EmUser} from '../models';
-import {EmUserRepository} from '../repositories';
-import {HttpErrors} from '@loopback/rest';
+import {HttpErrors, post, requestBody} from '@loopback/rest';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import {EmUser} from '../models';
+import {EmUserRepository} from '../repositories';
+import {intercept} from '@loopback/core';
 
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+ @intercept('interceptors.ResponseInterceptor')
 export class AuthController {
   constructor(
     @repository(EmUserRepository)
     public emUserRepository: EmUserRepository,
-  ) {}
+  ) { }
 
   @post('/signup')
   async signup(
@@ -35,7 +36,7 @@ export class AuthController {
     })
     userData: Omit<EmUser, 'userId'>,
   ): Promise<EmUser> {
-     if (!EMAIL_REGEX.test(userData.userEmail)) {
+    if (!EMAIL_REGEX.test(userData.userEmail)) {
       throw new HttpErrors.BadRequest('Invalid email format.');
     }
 
@@ -81,7 +82,6 @@ export class AuthController {
       throw new HttpErrors.Unauthorized('Invalid email or password.');
     }
 
-    // Verify the password
     const passwordIsValid = await bcrypt.compare(
       credentials.userPassword,
       user.userPassword!,
@@ -89,11 +89,11 @@ export class AuthController {
     if (!passwordIsValid) {
       throw new HttpErrors.Unauthorized('Invalid email or password.');
     }
+    const SECRET_KEY = 'skjsksatyamshwhwqsnitikajwkwforeverfdfsw';
 
-    // Create a JWT token
     const token = jwt.sign(
-      {userId: user.userId, userEmail: user.userEmail},
-      'SECRET_KEY', // Replace with a real secret key
+      {userId: user.userId, userEmail: user.userEmail, userRoleId: user.userRoleId},
+      SECRET_KEY,
       {expiresIn: '10h'},
     );
 
