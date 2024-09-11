@@ -1,17 +1,21 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
-import {EmUser} from './em-user.model';
+
+
+// settings: {
+//   postgresql: {tableName: 'em_projects'},
+//   foreignKeys: {
+//     fkProjectUserId: {
+//       name: 'fk_project_user_id',                      for adding foreign key run once then do it comment
+//       entity: 'EmUser',
+//       entityKey: 'user_id',
+//       foreignKey: 'project_user_id',
+//     },
+//   },
+// },
 
 @model({
   settings: {
     postgresql: {tableName: 'em_projects'},
-    foreignKeys: {
-      fkProjectUserId: {
-        name: 'fk_project_user_id',
-        entity: 'EmUser',
-        entityKey: 'user_id',
-        foreignKey: 'project_user_id',
-      },
-    },
   },
 })
 export class EmProjects extends Entity {
@@ -22,9 +26,6 @@ export class EmProjects extends Entity {
     postgresql: {columnName: 'project_id'},
   })
   projectId: number;
-
-  // @belongsTo(() => EmUser, {name: 'projectUser', keyFrom: 'projectUserId'})
-  // projectUserId: number;
 
   @property({
     type: 'number',

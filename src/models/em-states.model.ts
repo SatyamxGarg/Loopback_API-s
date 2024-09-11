@@ -32,7 +32,7 @@ export class EmStates extends Entity {
   stateName: string;
 
   @belongsTo(() => EmCountries, {name: 'country'})
-  countryId: number; 
+  countryId: number;
   @hasMany(() => EmCities, {keyTo: 'stateId'})
   cities: EmCities[];
 
