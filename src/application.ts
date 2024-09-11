@@ -10,12 +10,13 @@ import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
 import {ResponseInterceptor} from './interceptors/response.interceptor';
-import { EmCountriesRepository, EmRolesRepository } from './repositories';
+import { EmCountriesRepository, EmRolesRepository, EmUserRepository } from './repositories';
 import {EmCitiesRepository} from './repositories';
 import {EmStatesRepository} from './repositories';
 import {UsersDataSource} from './datasources/users.datasource';
 import {EmRoles} from './models/em-roles.model';
 import {EmCountries} from './models/em-countries.model';
+// import {TokenService} from './services/token.service';
 
 export {ApplicationConfig};
 
@@ -28,6 +29,8 @@ export class EmpApplication extends BootMixin(
     this.interceptor(ResponseInterceptor);
     this.sequence(MySequence);
     this.static('/', path.join(__dirname, '../public'));
+    this.repository(EmUserRepository);
+    // this.bind('services.tokenService').toClass(TokenService);
 
     this.configure(RestExplorerBindings.COMPONENT).to({
       path: '/explorer',
